@@ -1,18 +1,14 @@
 import { useState, useRef } from 'react';
 import { X, Save, Upload, Trash2 } from 'lucide-react';
+import type { User } from '../types/index';
 
-interface User {
-  id: string;
-  name: string;
-  avatar: string;
+// 扩展User接口以包含组件所需的额外字段
+interface UserWithAvatarType extends User {
   avatarType?: 'emoji' | 'image';
-  status: 'online' | 'away' | 'busy' | 'offline';
-  role: string;
-  position?: { x: number; y: number };
 }
 
 interface AvatarCreatorProps {
-  currentUser: User;
+  currentUser: UserWithAvatarType;
   onSave: (user: User) => void;
   onClose: () => void;
 }
@@ -36,9 +32,9 @@ export function AvatarCreator({ currentUser, onSave, onClose }: AvatarCreatorPro
   const [role, setRole] = useState(currentUser.role);
   const [avatar, setAvatar] = useState(currentUser.avatar);
   const [avatarType, setAvatarType] = useState<'emoji' | 'image'>(currentUser.avatarType || 'emoji');
-  const [status, setStatus] = useState(currentUser.status);
+  const [status, setStatus] = useState<'online' | 'offline' | 'away' | 'busy'>(currentUser.status || 'offline');
   const [uploadedImage, setUploadedImage] = useState<string | null>(
-    currentUser.avatarType === 'image' ? currentUser.avatar : null
+    currentUser.avatarType === 'image' && currentUser.avatar ? currentUser.avatar : null
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -87,14 +83,17 @@ export function AvatarCreator({ currentUser, onSave, onClose }: AvatarCreatorPro
   };
 
   const handleSave = () => {
-    onSave({
+    // 创建不包含avatarType的用户对象，以匹配User接口
+    const userToSave = {
       ...currentUser,
       name,
       role,
       avatar,
-      avatarType,
       status,
-    });
+    };
+    // 删除可能存在的avatarType属性
+    delete (userToSave as any).avatarType;
+    onSave(userToSave);
   };
 
   return (
@@ -126,7 +125,7 @@ export function AvatarCreator({ currentUser, onSave, onClose }: AvatarCreatorPro
                   <span className="text-6xl">{avatar}</span>
                 )}
               </div>
-              <div className={`absolute bottom-2 right-2 w-6 h-6 rounded-full border-4 border-white ${STATUS_OPTIONS.find(s => s.value === status)?.color}`} />
+              <div className={`absolute bottom-2 right-2 w-6 h-6 rounded-full border-4 border-white ${STATUS_OPTIONS.find(s => s.value === status)?.color || 'bg-slate-400'}`} />
             </div>
             <div className="text-center">
               <p className="text-slate-900">{name || '请输入姓名'}</p>

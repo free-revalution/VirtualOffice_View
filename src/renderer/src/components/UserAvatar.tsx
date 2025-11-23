@@ -1,15 +1,6 @@
 import { useState, useRef } from 'react';
 import { Video, MessageCircle, Phone, Move } from 'lucide-react';
-
-interface User {
-  id: string;
-  name: string;
-  avatar: string;
-  avatarType?: 'emoji' | 'image';
-  status: 'online' | 'away' | 'busy' | 'offline';
-  role: string;
-  position?: { x: number; y: number };
-}
+import type { User } from '../types/index';
 
 interface UserAvatarProps {
   user: User;
@@ -17,7 +8,7 @@ interface UserAvatarProps {
   onPositionChange?: (position: { x: number; y: number }) => void;
 }
 
-export function UserAvatar({ user, isCurrentUser, onPositionChange }: UserAvatarProps) {
+export function UserAvatar({ user, isCurrentUser, onPositionChange }: UserAvatarProps): React.JSX.Element {
   const [showActions, setShowActions] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const dragRef = useRef<{ startX: number; startY: number; startPosX: number; startPosY: number } | null>(null);
@@ -31,7 +22,7 @@ export function UserAvatar({ user, isCurrentUser, onPositionChange }: UserAvatar
 
   const position = user.position || { x: 50, y: 50 };
 
-  const handleMouseDown = (e: React.MouseEvent) => {
+  const handleMouseDown = (e: React.MouseEvent): void => {
     if (!isCurrentUser || !onPositionChange) return;
     
     e.preventDefault();
@@ -47,7 +38,7 @@ export function UserAvatar({ user, isCurrentUser, onPositionChange }: UserAvatar
       startPosY: position.y,
     };
 
-    const handleMouseMove = (e: MouseEvent) => {
+    const handleMouseMove = (e: MouseEvent): void => {
       if (!dragRef.current || !container) return;
       
       const containerRect = container.getBoundingClientRect();
@@ -67,7 +58,7 @@ export function UserAvatar({ user, isCurrentUser, onPositionChange }: UserAvatar
       onPositionChange({ x: newX, y: newY });
     };
 
-    const handleMouseUp = () => {
+    const handleMouseUp = (): void => {
       setIsDragging(false);
       dragRef.current = null;
       document.removeEventListener('mousemove', handleMouseMove);
@@ -101,7 +92,7 @@ export function UserAvatar({ user, isCurrentUser, onPositionChange }: UserAvatar
           } ${!isCurrentUser && 'hover:scale-110'} ${isDragging ? 'shadow-2xl' : ''}`}
           onMouseDown={handleMouseDown}
         >
-          {user.avatarType === 'image' ? (
+          {typeof user.avatar === 'string' && user.avatar.startsWith('http') ? (
             <img 
               src={user.avatar} 
               alt={user.name}
@@ -109,12 +100,12 @@ export function UserAvatar({ user, isCurrentUser, onPositionChange }: UserAvatar
               draggable={false}
             />
           ) : (
-            user.avatar
+            <span className="text-3xl">{user.avatar || '👤'}</span>
           )}
         </div>
         
         {/* 状态指示器 */}
-        <div className={`absolute bottom-1 right-1 w-5 h-5 rounded-full border-2 border-white ${statusColors[user.status]}`} />
+        <div className={`absolute bottom-1 right-1 w-5 h-5 rounded-full border-2 border-white ${statusColors[user.status as keyof typeof statusColors] || statusColors.offline}`} />
         
         {/* 可拖动提示 */}
         {isCurrentUser && !isDragging && (

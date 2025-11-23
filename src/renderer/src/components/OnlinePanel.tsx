@@ -1,29 +1,22 @@
 import { useState } from 'react';
 import { Search, Users, Video } from 'lucide-react';
-
-interface User {
-  id: string;
-  name: string;
-  avatar: string;
-  status: 'online' | 'away' | 'busy' | 'offline';
-  role: string;
-}
+import type { User } from '../types/index';
 
 interface OnlinePanelProps {
   currentUser: User;
 }
 
-export function OnlinePanel({ currentUser }: OnlinePanelProps) {
+export function OnlinePanel({}: OnlinePanelProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   
   const [users] = useState<User[]>([
-    { id: '1', name: '张三', avatar: '👨‍💼', status: 'online', role: '产品经理' },
-    { id: '2', name: 'Sarah Johnson', avatar: '👩‍💻', status: 'online', role: 'Frontend Developer' },
-    { id: '3', name: '李明', avatar: '👨‍💻', status: 'busy', role: '后端开发' },
-    { id: '4', name: 'Maria Garcia', avatar: '👩‍🎨', status: 'online', role: 'UI/UX Designer' },
-    { id: '5', name: '王芳', avatar: '👩‍💼', status: 'away', role: '项目经理' },
-    { id: '6', name: 'John Smith', avatar: '👨‍🔧', status: 'online', role: 'DevOps Engineer' },
+    { id: '1', name: '张三', email: 'zhangsan@example.com', avatar: '👨‍💼', status: 'online', role: '产品经理' },
+    { id: '2', name: 'Sarah Johnson', email: 'sarah@example.com', avatar: '👩‍💻', status: 'online', role: 'Frontend Developer' },
+    { id: '3', name: '李明', email: 'liming@example.com', avatar: '👨‍💻', status: 'busy', role: '后端开发' },
+    { id: '4', name: 'Maria Garcia', email: 'maria@example.com', avatar: '👩‍🎨', status: 'online', role: 'UI/UX Designer' },
+    { id: '5', name: '王芳', email: 'wangfang@example.com', avatar: '👩‍💼', status: 'away', role: '项目经理' },
+    { id: '6', name: 'John Smith', email: 'john@example.com', avatar: '👨‍🔧', status: 'online', role: 'DevOps Engineer' },
   ]);
 
   const filteredUsers = users.filter(user =>
@@ -101,7 +94,7 @@ export function OnlinePanel({ currentUser }: OnlinePanelProps) {
                 <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-xl">
                   {user.avatar}
                 </div>
-                <div className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${statusColors[user.status]}`} />
+                <div className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${statusColors[user.status || 'offline']}`} />
               </div>
 
               {/* 用户信息 */}
@@ -116,12 +109,12 @@ export function OnlinePanel({ currentUser }: OnlinePanelProps) {
                   <p className="text-xs text-slate-600 truncate">{user.role}</p>
                   <span className="text-xs text-slate-400">·</span>
                   <span className={`text-xs ${
-                    user.status === 'online' ? 'text-green-600' :
-                    user.status === 'away' ? 'text-yellow-600' :
-                    user.status === 'busy' ? 'text-red-600' :
-                    'text-slate-400'
-                  }`}>
-                    {statusText[user.status]}
+                      (user.status || 'offline') === 'online' ? 'text-green-600' :
+                      (user.status || 'offline') === 'away' ? 'text-yellow-600' :
+                      (user.status || 'offline') === 'busy' ? 'text-red-600' :
+                      'text-slate-400'
+                    }`}>
+                    {statusText[user.status || 'offline']}
                   </span>
                 </div>
               </div>

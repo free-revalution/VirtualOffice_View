@@ -1,11 +1,6 @@
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Send, Languages } from 'lucide-react';
-
-interface User {
-  id: string;
-  name: string;
-  avatar: string;
-}
+import type { User } from '../types/index';
 
 interface Message {
   id: string;
@@ -23,7 +18,7 @@ interface ChatPageProps {
   currentUser: User;
 }
 
-export function ChatPage({ currentUser }: ChatPageProps) {
+export function ChatPage({ currentUser }: ChatPageProps): React.JSX.Element {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -62,14 +57,14 @@ export function ChatPage({ currentUser }: ChatPageProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const sendMessage = () => {
+  const sendMessage = (): void => {
     if (!inputMessage.trim()) return;
 
     const newMessage: Message = {
       id: Date.now().toString(),
       userId: currentUser.id,
       userName: currentUser.name,
-      userAvatar: currentUser.avatar,
+      userAvatar: currentUser.avatar || '',
       content: inputMessage,
       timestamp: new Date(),
     };
@@ -78,15 +73,15 @@ export function ChatPage({ currentUser }: ChatPageProps) {
     setInputMessage('');
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = (e: React.KeyboardEvent): void => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
     }
   };
 
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+  const formatTime = (date: Date): string => {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
   return (
@@ -158,7 +153,7 @@ export function ChatPage({ currentUser }: ChatPageProps) {
                         </span>
                       </div>
                       <p className={`text-xs mt-1 italic ${isCurrentUser ? 'text-blue-100' : 'text-slate-600'}`}>
-                        "{message.originalContent}"
+                        &quot;{message.originalContent}&quot;
                       </p>
                     </div>
                   )}

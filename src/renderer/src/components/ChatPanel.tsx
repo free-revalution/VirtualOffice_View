@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, Languages, Smile } from 'lucide-react';
+import { Send, Languages } from 'lucide-react';
 
 interface User {
   id: string;

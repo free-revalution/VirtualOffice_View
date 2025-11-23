@@ -1,13 +1,6 @@
 import { useState } from 'react';
 import { Mic, MicOff, Video, VideoOff, Monitor, MonitorOff, PhoneOff, Users, Settings, Hand } from 'lucide-react';
-
-interface User {
-  id: string;
-  name: string;
-  avatar: string;
-  status: 'online' | 'away' | 'busy' | 'offline';
-  role: string;
-}
+import type { User } from '../types/index';
 
 interface MeetingParticipant extends User {
   isMuted: boolean;
@@ -20,19 +13,20 @@ interface MeetingRoomProps {
   currentUser: User;
 }
 
-export function MeetingRoom({ currentUser }: MeetingRoomProps) {
+export function MeetingRoom({ currentUser }: MeetingRoomProps): React.JSX.Element {
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOn, setIsVideoOn] = useState(true);
   const [isSharingScreen, setIsSharingScreen] = useState(false);
   const [isHandRaised, setIsHandRaised] = useState(false);
 
-  const [participants, setParticipants] = useState<MeetingParticipant[]>([
+  const [participants] = useState<MeetingParticipant[]>([
     {
-      id: '1',
-      name: '张三',
-      avatar: '👨‍💼',
-      status: 'online',
-      role: '产品经理',
+      id: currentUser.id,
+      name: currentUser.name,
+      avatar: currentUser.avatar || '',
+      email: currentUser.email || '',
+      status: currentUser.status,
+      role: currentUser.role,
       isMuted: false,
       isVideoOn: true,
       isSharingScreen: false,
@@ -42,6 +36,7 @@ export function MeetingRoom({ currentUser }: MeetingRoomProps) {
       id: '2',
       name: 'Sarah Johnson',
       avatar: '👩‍💻',
+      email: 'sarah@example.com',
       status: 'online',
       role: 'Frontend Developer',
       isMuted: false,
@@ -53,6 +48,7 @@ export function MeetingRoom({ currentUser }: MeetingRoomProps) {
       id: '3',
       name: '李明',
       avatar: '👨‍💻',
+      email: 'liming@example.com',
       status: 'online',
       role: '后端开发',
       isMuted: true,
@@ -64,6 +60,7 @@ export function MeetingRoom({ currentUser }: MeetingRoomProps) {
       id: '4',
       name: 'Maria Garcia',
       avatar: '👩‍🎨',
+      email: 'maria@example.com',
       status: 'online',
       role: 'UI/UX Designer',
       isMuted: false,
@@ -73,11 +70,11 @@ export function MeetingRoom({ currentUser }: MeetingRoomProps) {
     },
   ]);
 
-  const toggleScreenShare = () => {
+  const toggleScreenShare = (): void => {
     setIsSharingScreen(!isSharingScreen);
   };
 
-  const leaveMeeting = () => {
+  const leaveMeeting = (): void => {
     if (confirm('确定要离开会议吗？')) {
       alert('已离开会议');
     }
